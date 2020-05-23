@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnimeListInfoActivity">
+
+    <TextView
+        android:id="@+id/user_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textSize="24sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/num_anime_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/user_text"
+        app:layout_constraintTop_toBottomOf="@+id/user_text" />
+
+    <TextView
+        android:id="@+id/time_spent_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/num_anime_text"
+        app:layout_constraintTop_toBottomOf="@+id/num_anime_text" />
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="onClickSaveButton"
+        android:text="Save &amp; Exit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/add_anime_button"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="onClickAddAnimeButton"
+        android:text="Add Anime"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/remove_anime_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/remove_anime_button"
+        android:layout_width="116dp"
+        android:layout_height="wrap_content"
+        android:onClick="onClickRemoveAnimeButton"
+        android:text="Remove Anime"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/list_anime_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/add_anime_button"
+        app:layout_constraintTop_toTopOf="@+id/add_anime_button" />
+
+    <Button
+        android:id="@+id/list_anime_button"
+        android:layout_width="116dp"
+        android:layout_height="wrap_content"
+        android:onClick="onClickListAnimeButton"
+        android:text="List Anime"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/remove_anime_button"
+        app:layout_constraintTop_toTopOf="@+id/remove_anime_button" />
+
+    <LinearLayout
+        android:id="@+id/add_anime_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/save_button"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/add_anime_warning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/colorAccent" />
+
+        <EditText
+            android:id="@+id/add_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Anime Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/add_length_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Episode Length (in minutes)"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/add_num_episodes_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Number of Episodes"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/add_episodes_watched_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Episodes Watched"
+            android:inputType="textPersonName" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/submit_anime_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:onClick="onClickSubmitAnimeButton"
+        android:text="Submit"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/add_anime_layout"
+        app:layout_constraintTop_toBottomOf="@+id/add_anime_layout" />
+
+    <LinearLayout
+        android:id="@+id/remove_anime_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="32dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/save_button"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/remove_warning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/remove_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Enter the entry #"
+            android:inputType="textPersonName" />
+
+        <LinearLayout
+            android:id="@+id/remove_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/remove_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClickRemoveCancelButton"
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/remove_query"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClickRemoveQueryButton"
+                android:text="Query" />
+
+            <Button
+                android:id="@+id/remove_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClickRemoveConfirmButton"
+                android:text="Confirm" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

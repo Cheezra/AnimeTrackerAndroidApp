@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnimeInfoActivity">
+
+    <TextView
+        android:id="@+id/entry_num_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/name_text"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name_text"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/change_name_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/entry_num_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/episode_length_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/entry_num_text"
+        app:layout_constraintTop_toBottomOf="@+id/entry_num_text" />
+
+    <TextView
+        android:id="@+id/num_episodes_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/episode_length_text"
+        app:layout_constraintTop_toBottomOf="@+id/episode_length_text" />
+
+    <TextView
+        android:id="@+id/episodes_watched_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/num_episodes_text"
+        app:layout_constraintTop_toBottomOf="@+id/num_episodes_text" />
+
+    <TextView
+        android:id="@+id/time_spent_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/episodes_watched_text"
+        app:layout_constraintTop_toBottomOf="@+id/episodes_watched_text" />
+
+    <Button
+        android:id="@+id/change_name_button"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="onClickChangeButton"
+        android:text="Change"
+        android:visibility="visible"
+        app:layout_constraintBaseline_toBaselineOf="@+id/name_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/name_text" />
+
+    <Button
+        android:id="@+id/change_episode_length_button"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="onClickChangeButton"
+        android:text="Change"
+        app:layout_constraintBaseline_toBaselineOf="@+id/episode_length_text"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/change_num_episodes_button"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="onClickChangeButton"
+        android:text="Change"
+        app:layout_constraintBaseline_toBaselineOf="@+id/num_episodes_text"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/change_episodes_watched_button"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="onClickChangeButton"
+        android:text="Change"
+        app:layout_constraintBaseline_toBaselineOf="@+id/episodes_watched_text"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Save &amp; Return"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/submit_change_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:onClick="onClickSubmitButton"
+        android:text="Submit"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/change_text"
+        app:layout_constraintTop_toBottomOf="@+id/change_text" />
+
+    <EditText
+        android:id="@+id/change_text"
+        android:layout_width="379dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:visibility="invisible"
+        android:enabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_spent_text" />
+
+    <TextView
+        android:id="@+id/warning_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/change_text"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
