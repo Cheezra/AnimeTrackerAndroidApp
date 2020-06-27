@@ -13,9 +13,11 @@ import android.widget.TextView;
 
 public class AnimeInfoActivity extends AppCompatActivity {
 
-    public static final String RETURNED_ANIME = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
+    public static final String RETURNED_LIST = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
 
+    AnimeList thisList;
     Anime thisPage;
+    int entryNum;
     int changeButtonPressed;
 
     @Override
@@ -30,7 +32,10 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
         //find the anime entry that this is for
         //Anime thisPage = new Anime("Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai", 22, 11, 11);
-        thisPage = (Anime)intent.getSerializableExtra(ListAnimeActivity.SENT_ANIME);
+        thisList = (AnimeList)intent.getSerializableExtra(ListAnimeActivity.SENT_LIST);
+
+        entryNum = (int)intent.getSerializableExtra(ListAnimeActivity.ANIME_INDEX) + 1;
+        thisPage = thisList.getAnime(entryNum);
 
         //fill the page with the appropriate information
         fillPage(thisPage);
@@ -62,9 +67,9 @@ public class AnimeInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Anime resultAnime = thisPage;
+                AnimeList resultList = thisList;
                 Intent result = new Intent();
-                result.putExtra(RETURNED_ANIME, resultAnime);
+                result.putExtra(RETURNED_LIST, resultList);
                 setResult(Activity.RESULT_OK, result);
                 finish();
 
@@ -199,6 +204,10 @@ public class AnimeInfoActivity extends AppCompatActivity {
             //clear text from the changeText and warning
             changeText.setText("");
             warningText.setText("");
+
+
+            //update the animeList object
+            thisList.setAnime(entryNum, thisPage);
 
             //update the information on the screen
             fillPage(thisPage);
