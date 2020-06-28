@@ -6,10 +6,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -19,6 +24,8 @@ public class ListAnimeActivity extends AppCompatActivity {
     public static final String SENT_LIST = "com.example.animetracker.ListAnime.SENT";  //Anime object to send to AnimeInfoActivity
     public static final int RETURN_LIST = 5;   //requestCode for the Anime object returned from AnimeInfoActivity
     public static final String ANIME_INDEX = "com.example.animetracker.ListAnime.INDEX";
+
+    private static final String FILENAME = "lists.txt";
 
     RecyclerView rvAnimeList;
     AnimeListAdapter adapter;
@@ -99,6 +106,33 @@ public class ListAnimeActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    public void onPause () {
+        super.onPause();
+
+        //saves the list to the file when the app loses focus
+
+        //save the AnimeList object to a file
+        Context context = getBaseContext();
+
+        try {
+
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(animeList);
+
+            os.close();
+            fos.close();
+
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
 
     }
 }

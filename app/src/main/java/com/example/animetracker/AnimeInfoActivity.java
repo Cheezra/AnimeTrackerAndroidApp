@@ -3,7 +3,7 @@ package com.example.animetracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,9 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 public class AnimeInfoActivity extends AppCompatActivity {
 
     public static final String RETURNED_LIST = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
+
+    private static final String FILENAME = "lists.txt";
 
     AnimeList thisList;
     Anime thisPage;
@@ -211,6 +218,33 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
             //update the information on the screen
             fillPage(thisPage);
+        }
+
+    }
+
+    public void onPause () {
+        super.onPause();
+
+        //saves the list to the file when the app loses focus
+
+        //save the AnimeList object to a file
+        Context context = getBaseContext();
+
+        try {
+
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(thisList);
+
+            os.close();
+            fos.close();
+
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        catch (IOException e) {
+            System.out.println(e);
         }
 
     }

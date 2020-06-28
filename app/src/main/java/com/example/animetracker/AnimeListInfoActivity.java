@@ -3,6 +3,7 @@ package com.example.animetracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,13 +12,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class AnimeListInfoActivity extends AppCompatActivity {
 
     public static final String RETURNED_LIST = "com.example.animetracker.ListInfo.RETURNED";     //list to return to the main activity
     public static final int RETURN_LIST = 1;     //return code for the list returned by the list activity
     public static final String SENT_LIST = "com.example.animetracker.ListInfo.SENT";     //list that is sent to the list anime activity
+
+    private static final String FILENAME = "lists.txt";
 
     AnimeList list;
 
@@ -279,6 +285,34 @@ public class AnimeListInfoActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    @Override
+    public void onPause () {
+        super.onPause();
+
+        //saves the list to the file when the app loses focus
+
+        //save the AnimeList object to a file
+        Context context = getBaseContext();
+
+        try {
+
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(list);
+
+            os.close();
+            fos.close();
+
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
 
     }
 
