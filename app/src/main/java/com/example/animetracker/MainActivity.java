@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         myList.addAnime("Gakkougurashi!", 23, 12, 36);*/
 
         //get the saved list
-        onClickRetrieveButton(findViewById(R.id.retrieve_button));
+        retrieveFile();
     }
 
     public void onButtonPressed(View view) {
@@ -60,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onClickSaveButton (View view) {
+    @Override
+    public void onPause () {
+        super.onPause();
 
         //save the AnimeList object to a file
         Context context = getBaseContext();
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onClickRetrieveButton (View view) {
+    public void retrieveFile () {
 
         Context context = getBaseContext();
 
