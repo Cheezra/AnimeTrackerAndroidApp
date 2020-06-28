@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 public class AnimeInfoActivity extends AppCompatActivity {
 
     public static final String RETURNED_LIST = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
+    public static final String RETURNED_ENTRY_NUM = "com.example.animetracker.AnimeInfo.RETURNED_NUM";  //New entry number of the anime that changed
 
     private static final String FILENAME = "lists.txt";
 
@@ -77,6 +78,7 @@ public class AnimeInfoActivity extends AppCompatActivity {
                 AnimeList resultList = thisList;
                 Intent result = new Intent();
                 result.putExtra(RETURNED_LIST, resultList);
+                result.putExtra(RETURNED_ENTRY_NUM, thisPage.getEntryNum());
                 setResult(Activity.RESULT_OK, result);
                 finish();
 

@@ -93,7 +93,7 @@ public class ListAnimeActivity extends AppCompatActivity {
             case RETURN_LIST:
                 if (data != null) {
                     AnimeList newList = (AnimeList)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LIST);
-                    list.set(index, newList.getAnime(index + 1));
+                    list.set(index, newList.getAnime((int)data.getSerializableExtra(AnimeInfoActivity.RETURNED_ENTRY_NUM)));
                     Collections.sort(list);
                     animeList = new AnimeList(username, list);
                     adapter.notifyDataSetChanged();
