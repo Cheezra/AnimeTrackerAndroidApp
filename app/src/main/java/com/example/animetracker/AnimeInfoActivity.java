@@ -3,7 +3,7 @@ package com.example.animetracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,11 +11,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 public class AnimeInfoActivity extends AppCompatActivity {
 
-    public static final String RETURNED_ANIME = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
+    public static final String RETURNED_LIST = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
+    public static final String RETURNED_ENTRY_NUM = "com.example.animetracker.AnimeInfo.RETURNED_NUM";  //New entry number of the anime that changed
 
+    private static final String FILENAME = "lists.txt";
+
+    AnimeList thisList;
     Anime thisPage;
+    int entryNum;
     int changeButtonPressed;
 
     @Override
@@ -30,7 +40,10 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
         //find the anime entry that this is for
         //Anime thisPage = new Anime("Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai", 22, 11, 11);
-        thisPage = (Anime)intent.getSerializableExtra(ListAnimeActivity.SENT_ANIME);
+        thisList = (AnimeList)intent.getSerializableExtra(ListAnimeActivity.SENT_LIST);
+
+        entryNum = (int)intent.getSerializableExtra(ListAnimeActivity.ANIME_INDEX) + 1;
+        thisPage = thisList.getAnime(entryNum);
 
         //fill the page with the appropriate information
         fillPage(thisPage);
@@ -62,9 +75,10 @@ public class AnimeInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Anime resultAnime = thisPage;
+                AnimeList resultList = thisList;
                 Intent result = new Intent();
-                result.putExtra(RETURNED_ANIME, resultAnime);
+                result.putExtra(RETURNED_LIST, resultList);
+                result.putExtra(RETURNED_ENTRY_NUM, thisPage.getEntryNum());
                 setResult(Activity.RESULT_OK, result);
                 finish();
 
@@ -200,8 +214,39 @@ public class AnimeInfoActivity extends AppCompatActivity {
             changeText.setText("");
             warningText.setText("");
 
+
+            //update the animeList object
+            thisList.setAnime(entryNum, thisPage);
+
             //update the information on the screen
             fillPage(thisPage);
+        }
+
+    }
+
+    public void onPause () {
+        super.onPause();
+
+        //saves the list to the file when the app loses focus
+
+        //save the AnimeList object to a file
+        Context context = getBaseContext();
+
+        try {
+
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(thisList);
+
+            os.close();
+            fos.close();
+
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        catch (IOException e) {
+            System.out.println(e);
         }
 
     }

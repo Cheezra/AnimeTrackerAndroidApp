@@ -6,18 +6,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class ListAnimeActivity extends AppCompatActivity {
 
     public static final String RETURNED_LIST = "com.example.animetracker.ListAnime.RETURNED";   //AnimeList to be returned to AnimeListInfoActivity
-    public static final String SENT_ANIME = "com.example.animetracker.ListAnime.SENT";  //Anime object to send to AnimeInfoActivity
-    public static final int RETURN_ANIME = 5;   //requestCode for the Anime object returned from AnimeInfoActivity
+    public static final String SENT_LIST = "com.example.animetracker.ListAnime.SENT";  //Anime object to send to AnimeInfoActivity
+    public static final int RETURN_LIST = 5;   //requestCode for the Anime object returned from AnimeInfoActivity
+    public static final String ANIME_INDEX = "com.example.animetracker.ListAnime.INDEX";
+
+    private static final String FILENAME = "lists.txt";
 
     RecyclerView rvAnimeList;
     AnimeListAdapter adapter;
@@ -68,11 +76,12 @@ public class ListAnimeActivity extends AppCompatActivity {
 
         View group = (View)view.getParent().getParent();
         index = rvAnimeList.getChildAdapterPosition(group);
-        Anime toSend = list.get(index);
+        AnimeList toSend = animeList;
 
         Intent intent = new Intent(this, AnimeInfoActivity.class);
-        intent.putExtra(SENT_ANIME, toSend);
-        startActivityForResult(intent, RETURN_ANIME);
+        intent.putExtra(SENT_LIST, toSend);
+        intent.putExtra(ANIME_INDEX, index);
+        startActivityForResult(intent, RETURN_LIST);
 
     }
 
@@ -81,11 +90,12 @@ public class ListAnimeActivity extends AppCompatActivity {
 
         switch (requestCode) {
 
-            case RETURN_ANIME:
+            case RETURN_LIST:
                 if (data != null) {
-                    Anime newAnime = (Anime)data.getSerializableExtra(AnimeInfoActivity.RETURNED_ANIME);
-                    list.set(index, newAnime);
+                    AnimeList newList = (AnimeList)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LIST);
+                    list.set(index, newList.getAnime((int)data.getSerializableExtra(AnimeInfoActivity.RETURNED_ENTRY_NUM)));
                     Collections.sort(list);
+                    animeList = new AnimeList(username, list);
                     adapter.notifyDataSetChanged();
                 }
                 break;
@@ -96,6 +106,33 @@ public class ListAnimeActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    public void onPause () {
+        super.onPause();
+
+        //saves the list to the file when the app loses focus
+
+        //save the AnimeList object to a file
+        Context context = getBaseContext();
+
+        try {
+
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(animeList);
+
+            os.close();
+            fos.close();
+
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
 
     }
 }

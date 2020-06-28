@@ -90,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-            FileInputStream fos = context.openFileInput(FILENAME);
-            ObjectInputStream os = new ObjectInputStream(fos);
-            myList = (AnimeList) os.readObject();
+            FileInputStream fis = context.openFileInput(FILENAME);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            myList = (AnimeList) is.readObject();
 
-            os.close();
-            fos.close();
+            is.close();
+            fis.close();
 
         }
         catch (FileNotFoundException e) {

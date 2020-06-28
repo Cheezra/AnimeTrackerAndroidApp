@@ -60,6 +60,7 @@ public class AnimeList implements Serializable {
 
         mAnimeList.set(entryNum - 1, newAnime);
         Collections.sort(mAnimeList);
+        recalculateEntryNums();
         updateTimeSpent();
 
     }
