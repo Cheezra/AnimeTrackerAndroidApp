@@ -16,15 +16,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 public class AnimeListInfoActivity extends AppCompatActivity {
 
-    public static final String RETURNED_LIST = "com.example.animetracker.ListInfo.RETURNED";     //list to return to the main activity
-    public static final int RETURN_LIST = 1;     //return code for the list returned by the list activity
-    public static final String SENT_LIST = "com.example.animetracker.ListInfo.SENT";     //list that is sent to the list anime activity
+    public static final String RETURNED_LISTS = "com.example.animetracker.ListInfo.RETURNED";     //list to return to the main activity
+    public static final int RETURN_LISTS = 1;     //return code for the list returned by the list activity
+    public static final String SENT_LISTS = "com.example.animetracker.ListInfo.SENT";     //list that is sent to the list anime activity
+
+    public static final String LIST_INDEX = "com.example.animetracker.ListInfo.LIST_INDEX"; //index to determine which AnimeList is being listed
 
     private static final String FILENAME = "lists.txt";
 
+    ArrayList<AnimeList> lists;
+    int listIndex;
     AnimeList list;
 
     @Override
@@ -34,7 +39,9 @@ public class AnimeListInfoActivity extends AppCompatActivity {
 
         //get the intent that started the activity and extract the chosen anime list
         Intent intent = getIntent();
-        list = (AnimeList) intent.getSerializableExtra(MainActivity.CHOSEN_LIST);
+        lists = (ArrayList<AnimeList>) intent.getSerializableExtra(MainActivity.SENT_LISTS);
+        listIndex = (int) intent.getSerializableExtra(MainActivity.LIST_INDEX);
+        list = lists.get(listIndex);
 
         populateViews(list);
     }
@@ -258,16 +265,17 @@ public class AnimeListInfoActivity extends AppCompatActivity {
     public void onClickListAnimeButton(View view) {
 
         Intent intent = new Intent(this, ListAnimeActivity.class);
-        intent.putExtra(SENT_LIST, list);
-        startActivityForResult(intent, RETURN_LIST);
+        intent.putExtra(SENT_LISTS, lists);
+        intent.putExtra(LIST_INDEX, listIndex);
+        startActivityForResult(intent, RETURN_LISTS);
 
     }
 
     public void onClickSaveButton(View view) {
 
-        AnimeList resultList = list;
+        ArrayList<AnimeList> resultLists = lists;
         Intent result = new Intent();
-        result.putExtra(RETURNED_LIST, resultList);
+        result.putExtra(RETURNED_LISTS, resultLists);
         setResult(Activity.RESULT_OK, result);
         finish();
 
@@ -276,8 +284,9 @@ public class AnimeListInfoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         switch(requestCode) {
-            case RETURN_LIST:       AnimeList newAnimeList = (AnimeList)data.getSerializableExtra(ListAnimeActivity.RETURNED_LIST);
-                                    list = newAnimeList;
+            case RETURN_LISTS:       ArrayList<AnimeList> newAnimeLists = (ArrayList<AnimeList>)data.getSerializableExtra(ListAnimeActivity.RETURNED_LISTS);
+                                    lists = newAnimeLists;
+                                    list = lists.get(listIndex);
                                     populateViews(list);
                                     break;
 
@@ -301,7 +310,7 @@ public class AnimeListInfoActivity extends AppCompatActivity {
 
             FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(list);
+            os.writeObject(lists);
 
             os.close();
             fos.close();

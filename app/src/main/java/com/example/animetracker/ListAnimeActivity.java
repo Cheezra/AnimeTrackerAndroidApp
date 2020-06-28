@@ -20,18 +20,21 @@ import java.util.Collections;
 
 public class ListAnimeActivity extends AppCompatActivity {
 
-    public static final String RETURNED_LIST = "com.example.animetracker.ListAnime.RETURNED";   //AnimeList to be returned to AnimeListInfoActivity
-    public static final String SENT_LIST = "com.example.animetracker.ListAnime.SENT";  //Anime object to send to AnimeInfoActivity
-    public static final int RETURN_LIST = 5;   //requestCode for the Anime object returned from AnimeInfoActivity
-    public static final String ANIME_INDEX = "com.example.animetracker.ListAnime.INDEX";
+    public static final String RETURNED_LISTS = "com.example.animetracker.ListAnime.RETURNED";   //AnimeList to be returned to AnimeListInfoActivity
+    public static final String SENT_LISTS = "com.example.animetracker.ListAnime.SENT";  //Anime object to send to AnimeInfoActivity
+    public static final int RETURN_LISTS = 5;   //requestCode for the Anime object returned from AnimeInfoActivity
+    public static final String ANIME_INDEX = "com.example.animetracker.ListAnime.ANIME_INDEX";    //index to determine which anime was chosen to edit
+    public static final String LIST_INDEX = "com.example.animetracker.ListAnime.LIST_INDEX";    //index to determine which AnimeList was chosen to edit
 
     private static final String FILENAME = "lists.txt";
 
     RecyclerView rvAnimeList;
     AnimeListAdapter adapter;
+    ArrayList<AnimeList> animeLists;
+    int listIndex;
     AnimeList animeList;
 
-    int index;
+    int animeIndex;
 
     //variables to recreate the animelist in order to return it
     String username;
@@ -46,7 +49,9 @@ public class ListAnimeActivity extends AppCompatActivity {
 
         rvAnimeList = (RecyclerView) findViewById(R.id.rv_anime_list);
 
-        animeList = (AnimeList)intent.getSerializableExtra(AnimeListInfoActivity.SENT_LIST);
+        animeLists = (ArrayList<AnimeList>) intent.getSerializableExtra(AnimeListInfoActivity.SENT_LISTS);
+        listIndex = (int) intent.getSerializableExtra(AnimeListInfoActivity.LIST_INDEX);
+        animeList = animeLists.get(listIndex);
 
         username = animeList.getUserName();
         list = animeList.getAnimeList();
@@ -64,9 +69,10 @@ public class ListAnimeActivity extends AppCompatActivity {
 
     public void onClickSaveButton(View view) {
 
-        AnimeList listResult = new AnimeList(username, list);
+        AnimeList listResult = new AnimeList(username, list);   //TODO: this may not be necessary, due to the fact that ArrayLists are reference classes,
+        animeLists.set(listIndex, listResult);                  //TODO: but I'm too scared to remove it
         Intent result = new Intent();
-        result.putExtra(RETURNED_LIST, listResult);
+        result.putExtra(RETURNED_LISTS, animeLists);
         setResult(Activity.RESULT_OK, result);
         finish();
 
@@ -75,13 +81,14 @@ public class ListAnimeActivity extends AppCompatActivity {
     public void onClickViewButton(View view) {
 
         View group = (View)view.getParent().getParent();
-        index = rvAnimeList.getChildAdapterPosition(group);
-        AnimeList toSend = animeList;
+        animeIndex = rvAnimeList.getChildAdapterPosition(group);
+        ArrayList<AnimeList> toSend = animeLists;
 
         Intent intent = new Intent(this, AnimeInfoActivity.class);
-        intent.putExtra(SENT_LIST, toSend);
-        intent.putExtra(ANIME_INDEX, index);
-        startActivityForResult(intent, RETURN_LIST);
+        intent.putExtra(SENT_LISTS, toSend);
+        intent.putExtra(LIST_INDEX, listIndex);
+        intent.putExtra(ANIME_INDEX, animeIndex);
+        startActivityForResult(intent, RETURN_LISTS);
 
     }
 
@@ -90,12 +97,13 @@ public class ListAnimeActivity extends AppCompatActivity {
 
         switch (requestCode) {
 
-            case RETURN_LIST:
+            case RETURN_LISTS:
                 if (data != null) {
-                    AnimeList newList = (AnimeList)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LIST);
-                    list.set(index, newList.getAnime((int)data.getSerializableExtra(AnimeInfoActivity.RETURNED_ENTRY_NUM)));
+                    ArrayList<AnimeList> newLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LISTS);
+                    list.set(animeIndex, newLists.get(listIndex).getAnime((int)data.getSerializableExtra(AnimeInfoActivity.RETURNED_ENTRY_NUM)));
                     Collections.sort(list);
                     animeList = new AnimeList(username, list);
+                    animeLists.set(listIndex, animeList);
                     adapter.notifyDataSetChanged();
                 }
                 break;
@@ -121,7 +129,7 @@ public class ListAnimeActivity extends AppCompatActivity {
 
             FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(animeList);
+            os.writeObject(animeLists);
 
             os.close();
             fos.close();

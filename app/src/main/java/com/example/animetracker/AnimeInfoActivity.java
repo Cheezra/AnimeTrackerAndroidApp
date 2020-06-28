@@ -15,14 +15,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 public class AnimeInfoActivity extends AppCompatActivity {
 
-    public static final String RETURNED_LIST = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
+    public static final String RETURNED_LISTS = "com.example.animetracker.AnimeInfo.RETURNED";  //Anime object to return to ListAnimeActivity
     public static final String RETURNED_ENTRY_NUM = "com.example.animetracker.AnimeInfo.RETURNED_NUM";  //New entry number of the anime that changed
 
     private static final String FILENAME = "lists.txt";
 
+    ArrayList<AnimeList> theseLists;
+    int listIndex;
     AnimeList thisList;
     Anime thisPage;
     int entryNum;
@@ -40,7 +43,9 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
         //find the anime entry that this is for
         //Anime thisPage = new Anime("Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai", 22, 11, 11);
-        thisList = (AnimeList)intent.getSerializableExtra(ListAnimeActivity.SENT_LIST);
+        theseLists = (ArrayList<AnimeList>) intent.getSerializableExtra(ListAnimeActivity.SENT_LISTS);
+        listIndex = (int) intent.getSerializableExtra(ListAnimeActivity.LIST_INDEX);
+        thisList = theseLists.get(listIndex);
 
         entryNum = (int)intent.getSerializableExtra(ListAnimeActivity.ANIME_INDEX) + 1;
         thisPage = thisList.getAnime(entryNum);
@@ -75,9 +80,9 @@ public class AnimeInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                AnimeList resultList = thisList;
+                ArrayList<AnimeList> resultLists = theseLists;
                 Intent result = new Intent();
-                result.putExtra(RETURNED_LIST, resultList);
+                result.putExtra(RETURNED_LISTS, resultLists);
                 result.putExtra(RETURNED_ENTRY_NUM, thisPage.getEntryNum());
                 setResult(Activity.RESULT_OK, result);
                 finish();
@@ -236,7 +241,7 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
             FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(thisList);
+            os.writeObject(theseLists);
 
             os.close();
             fos.close();

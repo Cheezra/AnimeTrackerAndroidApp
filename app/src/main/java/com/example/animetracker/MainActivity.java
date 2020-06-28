@@ -13,15 +13,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String CHOSEN_LIST = "com.example.animetracker.MainActivity.SENT";  //AnimeList objrct to be sent to AnimeListInfoActivity
-    public static final int RETURNED_LIST = 2; //requestCode for the AnimeList returned by AnimeListInfoActivity
+    public static final String SENT_LISTS = "com.example.animetracker.MainActivity.SENT";  //AnimeList object to be sent to AnimeListInfoActivity
+    public static final String LIST_INDEX = "com.example.animetracker.MainActivity.INDEX";  //Index to determine which AnimeList was selected
+    public static final int RETURNED_LISTS = 2; //requestCode for the AnimeList returned by AnimeListInfoActivity
 
     private static final String FILENAME = "lists.txt";
 
-    AnimeList myList;
+    ArrayList<AnimeList> myLists;
 
 
     @Override
@@ -45,18 +47,23 @@ public class MainActivity extends AppCompatActivity {
         myList.addAnime("Isekai Quartet", 11, 12, 12);
         myList.addAnime("Gakkougurashi!", 23, 12, 36);*/
 
+        myLists = new ArrayList<AnimeList>();
+
         //get the saved list
         retrieveFile();
     }
 
     public void onButtonPressed(View view) {
 
+        int index = 0;
+
         Intent intent = new Intent(this, AnimeListInfoActivity.class);
 
         //add the anime list as an extra for the intent
-        intent.putExtra(CHOSEN_LIST, myList);
+        intent.putExtra(SENT_LISTS, myLists);
+        intent.putExtra(LIST_INDEX, index);
 
-        startActivityForResult(intent, RETURNED_LIST);
+        startActivityForResult(intent, RETURNED_LISTS);
 
     }
 
@@ -71,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
             FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(myList);
+            os.writeObject(myLists);
 
             os.close();
             fos.close();
@@ -94,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
             FileInputStream fis = context.openFileInput(FILENAME);
             ObjectInputStream is = new ObjectInputStream(fis);
-            myList = (AnimeList) is.readObject();
+            myLists = (ArrayList<AnimeList>) is.readObject();
 
             is.close();
             fis.close();
@@ -117,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (requestCode) {
 
-            case RETURNED_LIST: if (data != null) myList = (AnimeList)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LIST);
+            case RETURNED_LISTS: if (data != null) myLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LISTS);
                                 break;
 
             default:            break;
