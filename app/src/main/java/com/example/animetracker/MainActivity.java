@@ -1,6 +1,9 @@
 package com.example.animetracker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String FILENAME = "lists.txt";
 
     ArrayList<AnimeList> myLists;
+    RecyclerView rvAnimeLists;
 
 
     @Override
@@ -51,6 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
         //get the saved list
         retrieveFile();
+
+        //set the recyclerView
+        rvAnimeLists = (RecyclerView) findViewById(R.id.rv_anime_lists);
+
+        AnimeListArrayAdapter adapter = new AnimeListArrayAdapter(myLists);
+        rvAnimeLists.setAdapter(adapter);
+        rvAnimeLists.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        rvAnimeLists.addItemDecoration(itemDecoration);
+
     }
 
     public void onButtonPressed(View view) {
