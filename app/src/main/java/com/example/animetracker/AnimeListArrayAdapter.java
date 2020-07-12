@@ -8,11 +8,22 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 public class AnimeListArrayAdapter extends RecyclerView.Adapter<AnimeListArrayAdapter.ViewHolder> {
+
+    //click handler interface
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+
+    //Define listener member variable
+    private OnItemClickListener listener;
+
+    //Define the method that allows the parent activity to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -20,13 +31,25 @@ public class AnimeListArrayAdapter extends RecyclerView.Adapter<AnimeListArrayAd
         public TextView numAnimeTextView;
         public TextView timeSpentTextView;
 
-        public ViewHolder (View itemView) {
+        public ViewHolder (final View itemView) {
 
             super(itemView);
 
             usernameTextView = (TextView) itemView.findViewById(R.id.username_text);
             numAnimeTextView = (TextView) itemView.findViewById(R.id.num_anime_text);
             timeSpentTextView = (TextView) itemView.findViewById(R.id.time_spent_text);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(itemView, position);
+                        }
+                    }
+                }
+            });
 
         }
 

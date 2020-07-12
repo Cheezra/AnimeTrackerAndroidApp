@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<AnimeList> myLists;
     RecyclerView rvAnimeLists;
+    AnimeListArrayAdapter adapter;
 
 
     @Override
@@ -59,7 +60,24 @@ public class MainActivity extends AppCompatActivity {
         //set the recyclerView
         rvAnimeLists = (RecyclerView) findViewById(R.id.rv_anime_lists);
 
-        AnimeListArrayAdapter adapter = new AnimeListArrayAdapter(myLists);
+        adapter = new AnimeListArrayAdapter(myLists);
+
+        //set the click listener
+        adapter.setOnItemClickListener(new AnimeListArrayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View itemView, int position) {
+
+                Intent intent = new Intent(MainActivity.this, AnimeListInfoActivity.class);
+
+                //add the anime list as an extra for the intent
+                intent.putExtra(SENT_LISTS, myLists);
+                intent.putExtra(LIST_INDEX, position);
+
+                startActivityForResult(intent, RETURNED_LISTS);
+
+            }
+        });
+
         rvAnimeLists.setAdapter(adapter);
         rvAnimeLists.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -138,8 +156,13 @@ public class MainActivity extends AppCompatActivity {
 
         switch (requestCode) {
 
-            case RETURNED_LISTS: if (data != null) myLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LISTS);
-                                break;
+            case RETURNED_LISTS: {
+                if (data != null) {
+                    myLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LISTS);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+            break;
 
             default:            break;
         }
