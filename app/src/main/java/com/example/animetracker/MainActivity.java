@@ -9,6 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String SENT_LISTS = "com.example.animetracker.MainActivity.SENT";  //AnimeList object to be sent to AnimeListInfoActivity
     public static final String LIST_INDEX = "com.example.animetracker.MainActivity.INDEX";  //Index to determine which AnimeList was selected
-    public static final int RETURNED_LISTS = 2; //requestCode for the AnimeList returned by AnimeListInfoActivity
+    public static final int RETURNED_LISTS_EDITED = 2; //requestCode for the AnimeLists returned by AnimeListInfoActivity
 
     private static final String FILENAME = "lists.txt";
 
@@ -30,17 +35,26 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvAnimeLists;
     AnimeListArrayAdapter adapter;
 
+    EditText addUsernameText;
+    EditText removeListText;
+    Button addListConfirmButton;
+    Button removeListConfirmButton;
+    Button cancelButton;
+    Button addListButton;
+    Button removeListButton;
+    TextView warningText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Initialization for testing purposes
         //create anime list here
         //myList = new AnimeList("PieBroCool");
 
         /*
-        //Initialization for testing purposes
         myList.addAnime("3-gatsu no Lion", 25, 45, 45);
         myList.addAnime("5-toubun no Hanayome", 25, 12, 12);
         myList.addAnime("Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai", 22, 11, 11);
@@ -51,6 +65,26 @@ public class MainActivity extends AppCompatActivity {
         myList.addAnime("Tzurezure Children", 15, 12, 12);
         myList.addAnime("Isekai Quartet", 11, 12, 12);
         myList.addAnime("Gakkougurashi!", 23, 12, 36);*/
+
+        //initialize all button and editText references
+        addUsernameText = (EditText) findViewById(R.id.add_username_text);
+        removeListText = (EditText) findViewById(R.id.remove_list_text);
+        addListConfirmButton = (Button) findViewById(R.id.add_list_confirm_button);
+        removeListConfirmButton = (Button) findViewById(R.id.remove_list_confirm_button);
+        cancelButton = (Button) findViewById(R.id.cancel_button);
+        addListButton = (Button) findViewById(R.id.add_button);
+        removeListButton = (Button) findViewById(R.id.remove_button);
+        warningText = (TextView) findViewById(R.id.warning_text);
+
+        //set visibility for necessary components
+        addUsernameText.setVisibility(EditText.INVISIBLE);
+        removeListText.setVisibility(EditText.INVISIBLE);
+        addListConfirmButton.setVisibility(Button.INVISIBLE);
+        removeListConfirmButton.setVisibility(Button.INVISIBLE);
+        cancelButton.setVisibility(Button.INVISIBLE);
+        addListButton.setVisibility(Button.VISIBLE);
+        removeListButton.setVisibility(Button.VISIBLE);
+        warningText.setVisibility(TextView.INVISIBLE);
 
         myLists = new ArrayList<AnimeList>();
 
@@ -73,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(SENT_LISTS, myLists);
                 intent.putExtra(LIST_INDEX, position);
 
-                startActivityForResult(intent, RETURNED_LISTS);
+                startActivityForResult(intent, RETURNED_LISTS_EDITED);
 
             }
         });
@@ -85,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
     public void onButtonPressed(View view) {
 
         int index = 0;
@@ -96,6 +131,120 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(LIST_INDEX, index);
 
         startActivityForResult(intent, RETURNED_LISTS);
+
+    }
+     */
+
+    public void onClickAddButton(View view) {
+
+        rvAnimeLists.setVisibility(RecyclerView.INVISIBLE);
+        addUsernameText.setVisibility(EditText.VISIBLE);
+        addListConfirmButton.setVisibility(Button.VISIBLE);
+        cancelButton.setVisibility(Button.VISIBLE);
+        addListButton.setVisibility(Button.INVISIBLE);
+        removeListButton.setVisibility(Button.INVISIBLE);
+        removeListText.setVisibility(EditText.INVISIBLE);
+        removeListConfirmButton.setVisibility(Button.INVISIBLE);
+
+    }
+
+    public void onClickRemoveButton(View view) {
+
+        rvAnimeLists.setVisibility(RecyclerView.INVISIBLE);
+        addListButton.setVisibility(Button.INVISIBLE);
+        removeListButton.setVisibility(Button.INVISIBLE);
+        cancelButton.setVisibility(Button.VISIBLE);
+        removeListText.setVisibility(EditText.VISIBLE);
+        removeListConfirmButton.setVisibility(Button.VISIBLE);
+
+    }
+
+    public void onClickAddConfirmButton(View view) {
+
+        //get the username from the text box
+        String newUsername = addUsernameText.getText().toString();
+
+        //check if the new username is taken or not
+        boolean isTaken = false;
+        for (AnimeList list : myLists) {
+
+            if (list.getUserName().equals(newUsername)) {
+                isTaken = true;
+                break;
+            }
+
+        }
+
+        //perform the appropriate action
+        if (!isTaken) {
+            //create the AnimeList and add it to the ArrayList
+            AnimeList newList = new AnimeList(newUsername);
+            myLists.add(newList);
+
+            //update the recyclerView
+            adapter.notifyItemInserted(myLists.size() - 1);
+
+            //return the activity to the start state
+            onClickCancelButton(cancelButton);
+        } else {
+            //show a warning
+            warningText.setVisibility(TextView.VISIBLE);
+            warningText.setText("This username is already taken.");
+        }
+
+    }
+
+    public void onClickRemoveConfirmButton(View view) {
+
+        //get the username of the AnimeList to remove
+        String removeUsername = removeListText.getText().toString();
+
+        //find the index of the AnimeList with the given username
+        int index = -1;
+        boolean foundList = false;
+        for (int i = 0; i < myLists.size(); i++) {
+
+            if (myLists.get(i).getUserName().equals(removeUsername)) {
+
+                index = i;
+                foundList = true;
+                break;
+
+            }
+
+        }
+
+        if (foundList) {
+            //remove the AnimeList from the ArrayList
+            myLists.remove(index);
+
+            //update the RecyclerView
+            adapter.notifyItemRemoved(index);
+
+            //return the activity to the start state
+            onClickCancelButton(cancelButton);
+        } else {
+            //show a warning
+            warningText.setVisibility(TextView.VISIBLE);
+            warningText.setText("The AnimeList with this username was not found");
+        }
+
+    }
+
+    public void onClickCancelButton(View view) {
+
+        addUsernameText.setText("");
+        removeListText.setText("");
+        warningText.setText("");
+        addUsernameText.setVisibility(EditText.INVISIBLE);
+        removeListText.setVisibility(EditText.INVISIBLE);
+        addListConfirmButton.setVisibility(Button.INVISIBLE);
+        removeListConfirmButton.setVisibility(Button.INVISIBLE);
+        cancelButton.setVisibility(Button.INVISIBLE);
+        addListButton.setVisibility(Button.VISIBLE);
+        removeListButton.setVisibility(Button.VISIBLE);
+        rvAnimeLists.setVisibility(RecyclerView.VISIBLE);
+        warningText.setVisibility(TextView.INVISIBLE);
 
     }
 
@@ -156,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (requestCode) {
 
-            case RETURNED_LISTS: {
+            case RETURNED_LISTS_EDITED: {
                 if (data != null) {
                     myLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LISTS);
                     adapter.notifyDataSetChanged();
