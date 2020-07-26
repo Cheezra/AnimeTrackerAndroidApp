@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     Button removeListButton;
     TextView warningText;
 
+    //TODO: Add progress bars to the AnimeList RecyclerView
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

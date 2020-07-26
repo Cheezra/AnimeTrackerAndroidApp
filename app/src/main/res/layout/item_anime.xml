@@ -6,32 +6,16 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:background="?android:attr/selectableItemBackground">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView
+        android:id="@+id/anime_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/anime_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="24sp"
-            android:text="Test Text"/>
-
-        <Button
-            android:id="@+id/view_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClickViewButton"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:text="Test Text"
-            android:textSize="10sp" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="24sp"
+        android:text="Test Text"/>
 
     <LinearLayout
         android:orientation="horizontal"

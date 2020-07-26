@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,15 +12,27 @@ import java.util.List;
 
 public class AnimeListAdapter extends RecyclerView.Adapter<AnimeListAdapter.ViewHolder> {
 
+    //click handler interface
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+
+    //Define listener member variable
+    private OnItemClickListener listener;
+
+    //Define the method that allows the parent activity to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView nameTextView;
         public TextView numEpsTextView;
         public TextView epsWatchedTextView;
         public TextView totalTimeTextView;
-        public Button viewButton;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
 
             super(itemView);
 
@@ -29,7 +40,20 @@ public class AnimeListAdapter extends RecyclerView.Adapter<AnimeListAdapter.View
             numEpsTextView = itemView.findViewById(R.id.num_eps);
             epsWatchedTextView = itemView.findViewById(R.id.eps_watched);
             totalTimeTextView = itemView.findViewById(R.id.total_time);
-            viewButton = itemView.findViewById(R.id.view_button);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(itemView, position);
+                        }
+                    }
+                }
+
+            });
 
         }
 
@@ -71,8 +95,6 @@ public class AnimeListAdapter extends RecyclerView.Adapter<AnimeListAdapter.View
         epsWatchedView.setText("Episodes Watched: " + anime.getEpisodesWatched());
         TextView totalTimeView = viewHolder.totalTimeTextView;
         totalTimeView.setText("Total Time: " + anime.getTimeSpent());
-        Button viewButton = viewHolder.viewButton;
-        viewButton.setText("View");
 
     }
 

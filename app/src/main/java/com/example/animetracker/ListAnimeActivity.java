@@ -58,6 +58,22 @@ public class ListAnimeActivity extends AppCompatActivity {
 
         adapter = new AnimeListAdapter(list);
 
+        adapter.setOnItemClickListener(new AnimeListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View itemView, int position) {
+
+                ArrayList<AnimeList> toSend = animeLists;
+                animeIndex = position;
+
+                Intent intent = new Intent(ListAnimeActivity.this, AnimeInfoActivity.class);
+                intent.putExtra(SENT_LISTS, toSend);
+                intent.putExtra(LIST_INDEX, listIndex);
+                intent.putExtra(ANIME_INDEX, animeIndex);
+                startActivityForResult(intent, RETURN_LISTS);
+
+            }
+        });
+
         rvAnimeList.setAdapter(adapter);
 
         rvAnimeList.setLayoutManager(new LinearLayoutManager(this));
@@ -78,6 +94,7 @@ public class ListAnimeActivity extends AppCompatActivity {
 
     }
 
+    /*
     public void onClickViewButton(View view) {
 
         View group = (View)view.getParent().getParent();
@@ -91,6 +108,7 @@ public class ListAnimeActivity extends AppCompatActivity {
         startActivityForResult(intent, RETURN_LISTS);
 
     }
+     */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
