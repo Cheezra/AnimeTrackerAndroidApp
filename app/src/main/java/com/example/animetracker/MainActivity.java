@@ -309,7 +309,9 @@ public class MainActivity extends AppCompatActivity {
 
             case RETURNED_LISTS_EDITED: {
                 if (data != null) {
-                    myLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LISTS);
+                    ArrayList<AnimeList> newLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeListInfoActivity.RETURNED_LISTS);
+                    myLists.clear();
+                    myLists.addAll(newLists);
                     adapter.notifyDataSetChanged();
                 }
             }

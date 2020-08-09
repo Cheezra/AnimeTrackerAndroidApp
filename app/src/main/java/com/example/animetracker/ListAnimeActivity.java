@@ -117,11 +117,16 @@ public class ListAnimeActivity extends AppCompatActivity {
 
             case RETURN_LISTS:
                 if (data != null) {
+                    //update the list
                     ArrayList<AnimeList> newLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LISTS);
-                    list.set(animeIndex, newLists.get(listIndex).getAnime((int)data.getSerializableExtra(AnimeInfoActivity.RETURNED_ENTRY_NUM)));
-                    Collections.sort(list);
+                    list.clear();
+                    list.addAll(newLists.get(listIndex).getAnimeList());
+
+                    //update the animeList and animeList arrayList
                     animeList = new AnimeList(username, list);
                     animeLists.set(listIndex, animeList);
+
+                    //update the RecyclerView
                     adapter.notifyDataSetChanged();
                 }
                 break;

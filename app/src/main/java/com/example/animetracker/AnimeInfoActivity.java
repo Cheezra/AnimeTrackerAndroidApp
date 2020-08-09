@@ -83,7 +83,6 @@ public class AnimeInfoActivity extends AppCompatActivity {
                 ArrayList<AnimeList> resultLists = theseLists;
                 Intent result = new Intent();
                 result.putExtra(RETURNED_LISTS, resultLists);
-                result.putExtra(RETURNED_ENTRY_NUM, thisPage.getEntryNum());
                 setResult(Activity.RESULT_OK, result);
                 finish();
 
