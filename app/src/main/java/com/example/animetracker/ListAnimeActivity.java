@@ -25,6 +25,7 @@ public class ListAnimeActivity extends AppCompatActivity {
     public static final int RETURN_LISTS = 5;   //requestCode for the Anime object returned from AnimeInfoActivity
     public static final String ANIME_INDEX = "com.example.animetracker.ListAnime.ANIME_INDEX";    //index to determine which anime was chosen to edit
     public static final String LIST_INDEX = "com.example.animetracker.ListAnime.LIST_INDEX";    //index to determine which AnimeList was chosen to edit
+    public static final String STATUS_CHOICE = "com.example.animetracker.ListAnime.STATUS_CHOICE"; //integer that determines the status of the anime that is to be edited
 
     private static final String FILENAME = "lists.txt";
 
@@ -33,6 +34,7 @@ public class ListAnimeActivity extends AppCompatActivity {
     ArrayList<AnimeList> animeLists;
     int listIndex;
     AnimeList animeList;
+    int statusChoice;
 
     int animeIndex;
 
@@ -53,8 +55,11 @@ public class ListAnimeActivity extends AppCompatActivity {
         listIndex = (int) intent.getSerializableExtra(AnimeListInfoActivity.LIST_INDEX);
         animeList = animeLists.get(listIndex);
 
+        statusChoice = (int) intent.getSerializableExtra(AnimeListInfoActivity.STATUS_CHOICE);
+
         username = animeList.getUserName();
-        list = animeList.getAnimeList();
+        if (statusChoice != -1) list = animeList.getAnimeListWithStatus(statusChoice);
+        else list = animeList.getAnimeList();
 
         adapter = new AnimeListAdapter(list);
 
@@ -68,6 +73,7 @@ public class ListAnimeActivity extends AppCompatActivity {
                 Intent intent = new Intent(ListAnimeActivity.this, AnimeInfoActivity.class);
                 intent.putExtra(SENT_LISTS, toSend);
                 intent.putExtra(LIST_INDEX, listIndex);
+                intent.putExtra(STATUS_CHOICE, statusChoice);
                 intent.putExtra(ANIME_INDEX, animeIndex);
                 startActivityForResult(intent, RETURN_LISTS);
 
@@ -85,8 +91,8 @@ public class ListAnimeActivity extends AppCompatActivity {
 
     public void onClickSaveButton(View view) {
 
-        AnimeList listResult = new AnimeList(username, list);   //TODO: this may not be necessary, due to the fact that ArrayLists are reference classes,
-        animeLists.set(listIndex, listResult);                  //TODO: but I'm too scared to remove it
+        AnimeList listResult = new AnimeList(username, animeList.getAnimeList());   //TODO: this may not be necessary, due to the fact that ArrayLists are reference classes,
+        animeLists.set(listIndex, listResult);                                      //TODO: but I'm too scared to remove it
         Intent result = new Intent();
         result.putExtra(RETURNED_LISTS, animeLists);
         setResult(Activity.RESULT_OK, result);
@@ -117,14 +123,18 @@ public class ListAnimeActivity extends AppCompatActivity {
 
             case RETURN_LISTS:
                 if (data != null) {
-                    //update the list
-                    ArrayList<AnimeList> newLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LISTS);
-                    list.clear();
-                    list.addAll(newLists.get(listIndex).getAnimeList());
-
                     //update the animeList and animeList arrayList
-                    animeList = new AnimeList(username, list);
+                    ArrayList<AnimeList> newLists = (ArrayList<AnimeList>)data.getSerializableExtra(AnimeInfoActivity.RETURNED_LISTS);
+                    ArrayList<Anime> newList = newLists.get(listIndex).getAnimeList();
+
+
+                    animeList = new AnimeList(username, newList);
                     animeLists.set(listIndex, animeList);
+
+                    //only give the list the Anime with the selected status
+                    list.clear();
+                    if (statusChoice != -1) list.addAll(animeList.getAnimeListWithStatus(statusChoice));
+                    else list.addAll(newList);
 
                     //update the RecyclerView
                     adapter.notifyDataSetChanged();

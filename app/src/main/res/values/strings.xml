@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">AnimeTracker</string>
+    <string-array name="status_names">
+        <item>Watching</item>
+        <item>Completed</item>
+        <item>On Hold</item>
+        <item>Dropped</item>
+        <item>Plan to Watch</item>
+    </string-array>
 </resources>

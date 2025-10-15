@@ -1,6 +1,7 @@
 package com.example.animetracker;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,7 +28,7 @@ public class AnimeList implements Serializable {
         mAnimeList = new ArrayList<Anime>();
 
         for (Anime anime : animeList) {
-            addAnime(anime.getName(), anime.getEpisodeLength(), anime.getNumEpisodes(), anime.getEpisodesWatched());
+            addAnime(anime.getName(), anime.getEpisodeLength(), anime.getNumEpisodes(), anime.getEpisodesWatched(), anime.getStatus());
         }
 
     }
@@ -38,6 +39,18 @@ public class AnimeList implements Serializable {
 
     public int getTimeSpentMinutes() {
         return mTimeSpentMinutes;
+    }
+
+    public ArrayList<Anime> getAnimeListWithStatus(int status) {
+
+        ArrayList<Anime> newList = new ArrayList<Anime>();
+        if (status < 0 || status > 4) return newList;
+
+        for (Anime a : getAnimeList()) {
+            if (a.getStatus() == status) newList.add(a);
+        }
+
+        return newList;
     }
 
     public String getUserName() {
@@ -65,9 +78,9 @@ public class AnimeList implements Serializable {
 
     }
 
-    public void addAnime(String name, int episodeLength, int numEpisodes, int episodesWatched) {
+    public void addAnime(String name, int episodeLength, int numEpisodes, int episodesWatched, int status) {
 
-        Anime newAnime = new Anime(name, episodeLength, numEpisodes, episodesWatched);
+        Anime newAnime = new Anime(name, episodeLength, numEpisodes, episodesWatched, status);
         newAnime.setEntryNum(++mNumAnime);
         mAnimeList.add(newAnime);
         Collections.sort(mAnimeList);
@@ -120,7 +133,7 @@ public class AnimeList implements Serializable {
         int timeSpent = 0;
 
         for (Anime anime : mAnimeList) {
-            timeSpent += anime.getEpisodeLength() * anime.getEpisodesWatched();
+            if (anime.getStatus() == 1) timeSpent += anime.getEpisodeLength() * anime.getEpisodesWatched();
         }
 
         mTimeSpentMinutes = timeSpent;

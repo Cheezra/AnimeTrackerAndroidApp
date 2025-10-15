@@ -7,8 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
@@ -26,10 +29,26 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
     ArrayList<AnimeList> theseLists;
     int listIndex;
-    AnimeList thisList;
+    ArrayList<Anime> thisList;
     Anime thisPage;
-    int entryNum;
+    int animeIndex;
     int changeButtonPressed;
+    int animeStatus;
+    int statusSelection;
+
+    Spinner statusSpinner;
+
+    AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            thisPage.setStatus(position);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            parent.setSelection(thisPage.getStatus());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +64,14 @@ public class AnimeInfoActivity extends AppCompatActivity {
         //Anime thisPage = new Anime("Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai", 22, 11, 11);
         theseLists = (ArrayList<AnimeList>) intent.getSerializableExtra(ListAnimeActivity.SENT_LISTS);
         listIndex = (int) intent.getSerializableExtra(ListAnimeActivity.LIST_INDEX);
-        thisList = theseLists.get(listIndex);
+        statusSelection = (int)intent.getSerializableExtra(ListAnimeActivity.STATUS_CHOICE);
+        animeIndex = (int)intent.getSerializableExtra(ListAnimeActivity.ANIME_INDEX);
 
-        entryNum = (int)intent.getSerializableExtra(ListAnimeActivity.ANIME_INDEX) + 1;
-        thisPage = thisList.getAnime(entryNum);
+        if (statusSelection != -1) thisList = theseLists.get(listIndex).getAnimeListWithStatus(statusSelection);
+        else thisList = theseLists.get(listIndex).getAnimeList();
+
+        thisPage = thisList.get(animeIndex);
+        animeStatus = thisPage.getStatus();
 
         //fill the page with the appropriate information
         fillPage(thisPage);
@@ -64,6 +87,7 @@ public class AnimeInfoActivity extends AppCompatActivity {
         TextView numEpisodesView = findViewById(R.id.num_episodes_text);
         TextView episodesWatchedView = findViewById(R.id.episodes_watched_text);
         TextView timeSpentView = findViewById(R.id.time_spent_text);
+        statusSpinner = findViewById(R.id.status_spinner);
 
         //fill the boxes with the appropriate information
         entryNumView.setText("Anime #" + thisAnime.getEntryNum() + ")");
@@ -89,6 +113,22 @@ public class AnimeInfoActivity extends AppCompatActivity {
             }
         });
 
+        //populate the status spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.status_names, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statusSpinner.setAdapter(adapter);
+        statusSpinner.setOnItemSelectedListener(spinnerListener);
+
+        onResume();
+
+    }
+
+    //set the selected item of the statusSpinner
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        statusSpinner.setSelection(animeStatus);
     }
 
     public void onClickChangeButton(View view) {
@@ -220,7 +260,7 @@ public class AnimeInfoActivity extends AppCompatActivity {
 
 
             //update the animeList object
-            thisList.setAnime(entryNum, thisPage);
+            thisList.set(animeIndex, thisPage);
 
             //update the information on the screen
             fillPage(thisPage);

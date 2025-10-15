@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,10 +13,24 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class AnimeListInfoActivity extends AppCompatActivity {
@@ -25,12 +40,15 @@ public class AnimeListInfoActivity extends AppCompatActivity {
     public static final String SENT_LISTS = "com.example.animetracker.ListInfo.SENT";     //list that is sent to the list anime activity
 
     public static final String LIST_INDEX = "com.example.animetracker.ListInfo.LIST_INDEX"; //index to determine which AnimeList is being listed
+    public static final String STATUS_CHOICE = "com.example.animetracker.ListInfo.STATUS_CHOICE";
 
     private static final String FILENAME = "lists.txt";
 
     ArrayList<AnimeList> lists;
     int listIndex;
     AnimeList list;
+
+    static int statusChoice = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +68,10 @@ public class AnimeListInfoActivity extends AppCompatActivity {
 
         //get all textView objects
         TextView userNameView = findViewById(R.id.user_text);
-        TextView numAnimeView = findViewById(R.id.num_anime_text);
         TextView timeSpentView = findViewById(R.id.time_spent_text);
 
         //fill text objects with appropriate information
         userNameView.setText(animeList.getUserName() + "'s Anime List");
-        numAnimeView.setText("# of series finished: " + animeList.getNumAnime());
         timeSpentView.setText("Total Time Spent Watching Anime: \n" + animeList.findTimeSpent());
 
         //-----------------------------------------------------
@@ -99,6 +115,116 @@ public class AnimeListInfoActivity extends AppCompatActivity {
         removeConfirmButton.setVisibility(Button.INVISIBLE);
         removeWarningView.setText("");
         entryNumInputView.setText("");
+
+
+        //fill out pie chart
+        PieChart mPieChart = findViewById(R.id.pie_chart);
+        ArrayList<PieEntry> dataList = new ArrayList<PieEntry>();
+        dataList.add(new PieEntry(list.getAnimeListWithStatus(0).size(),"Watching"));
+        dataList.add(new PieEntry(list.getAnimeListWithStatus(1).size(), "Completed"));
+        dataList.add(new PieEntry(list.getAnimeListWithStatus(2).size(), "On-Hold"));
+        dataList.add(new PieEntry(list.getAnimeListWithStatus(3).size(), "Dropped"));
+        dataList.add(new PieEntry(list.getAnimeListWithStatus(4).size(), "Plan to Watch"));
+
+        piechart(mPieChart, dataList);
+
+    }
+
+    //pie chart click listener
+    static OnChartValueSelectedListener selectedListener = new OnChartValueSelectedListener() {
+        @Override
+        public void onValueSelected(Entry e, Highlight h) {
+            PieEntry entry = (PieEntry) e;
+            String status = entry.getLabel();
+            switch(status) {
+                case "Watching":        statusChoice = 0;
+                                        break;
+                case "Completed":       statusChoice = 1;
+                                        break;
+                case "On-Hold":         statusChoice = 2;
+                                        break;
+                case "Dropped":         statusChoice = 3;
+                                        break;
+                case "Plan to Watch":   statusChoice = 4;
+                                        break;
+                default:                statusChoice = -1;
+                                        break;
+            }
+        }
+
+        @Override
+        public void onNothingSelected() {
+            statusChoice = -1;
+        }
+    };
+
+    //pie chart value formatter
+    static IValueFormatter formatter = new IValueFormatter() {
+
+        DecimalFormat format = new DecimalFormat("###,##0");
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return format.format(value);
+        }
+    };
+
+    //pie chart inflation method
+    public static void piechart(PieChart pieChart, ArrayList<PieEntry> arrayList) {
+
+        pieChart.setUsePercentValues(false);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setExtraOffsets(2, 5, 2, 2);
+        pieChart.setDragDecelerationFrictionCoef(0.95f);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setTransparentCircleRadius(61f);
+        pieChart.setRotationEnabled(false);
+        pieChart.setLongClickable(true);
+        pieChart.setHighlightPerTapEnabled(true);
+        PieDataSet pieDataSet = new PieDataSet(arrayList, "");
+        pieDataSet.setSliceSpace(3f);
+        pieDataSet.setSelectionShift(15f);
+
+
+        //Custom colors in the pie chart
+        int[] colors = {
+                Color.rgb(13, 166, 10),
+                Color.rgb(20, 70, 184),
+                Color.rgb(255, 210, 28),
+                Color.rgb(194, 44, 17),
+                Color.rgb(186, 186, 186)
+        };
+
+        ArrayList<Integer> arrayList1 = new ArrayList<>();
+        for (int c : colors) {
+            arrayList1.add(c);
+        }
+
+        pieDataSet.setColors(arrayList1);
+        pieDataSet.setColors(ColorTemplate.createColors(colors));
+        PieData pieData = new PieData(pieDataSet);
+        pieData.setValueTextSize(18f);
+        pieData.setValueTextColor(Color.WHITE);
+        pieChart.setData(pieData);
+        pieChart.setCenterTextSize(30f);
+        pieChart.setDrawEntryLabels(false);
+        pieChart.animateY(1000, Easing.EasingOption.EaseInOutExpo);
+
+        Legend l = pieChart.getLegend();
+        l.setFormSize(10);
+        l.setTextSize(10);
+        l.setForm(Legend.LegendForm.CIRCLE);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setWordWrapEnabled(false);
+        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+
+        //listeners
+        pieChart.setOnChartValueSelectedListener(selectedListener);
+
+        //value formatter
+        pieData.setValueFormatter(formatter);
 
     }
 
@@ -144,7 +270,7 @@ public class AnimeListInfoActivity extends AppCompatActivity {
         if (warning.equals("")) {
 
             //add the anime to the list
-            list.addAnime(name, length, numEps, epsWatched);
+            list.addAnime(name, length, numEps, epsWatched, 0);
 
             //update the information on the screen
             populateViews(list);
@@ -267,6 +393,7 @@ public class AnimeListInfoActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ListAnimeActivity.class);
         intent.putExtra(SENT_LISTS, lists);
         intent.putExtra(LIST_INDEX, listIndex);
+        intent.putExtra(STATUS_CHOICE, statusChoice);
         startActivityForResult(intent, RETURN_LISTS);
 
     }
